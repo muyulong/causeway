@@ -20,10 +20,10 @@
 
 ```mermaid
 flowchart LR
-  L[本地电脑 ssh/scp/rsync/VS Code] -- SSH 22001/22002... --> W[工作站<br>中继 + Web 控制台 + SOCKS 网关]
-  B[浏览器] -- HTTPS --> W
-  W <-- TLS 反向隧道 --> A1[Agent·私人sshd@服务器1]
-  W <-- TLS 反向隧道 --> A2[Agent·私人sshd@服务器2]
+  L["本地电脑 ssh/scp/rsync/VS Code"] -->|"SSH 22001/22002..."| W["工作站<br>中继 + Web 控制台 + SOCKS 网关"]
+  B["浏览器"] -->|"HTTPS"| W
+  A1["Agent·私人sshd@服务器1"] -->|"TLS 反向隧道"| W
+  A2["Agent·私人sshd@服务器2"] -->|"TLS 反向隧道"| W
 ```
 
 - **agent**（Go 单文件，目标机上以你的用户运行）：内置 SSH 服务器
