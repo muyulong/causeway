@@ -136,6 +136,12 @@ go test ./...
 
 本地联调：同一台机器上分别启动 relay 和 agent，`ssh -p 22001 本机` 即可验证整条链路。
 
+## 发布
+
+推送 `v*` 标签即触发 GitHub Actions：自动跑测试、静态编译
+`relay-linux-amd64` / `agent-linux-amd64` / `agent-linux-arm64`、
+生成 `SHA256SUMS` 并创建 GitHub Release。
+
 ## 第三方组件
 
 - [xterm.js](https://xtermjs.org/)（Web 终端渲染，MIT License），位于

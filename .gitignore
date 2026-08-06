@@ -10,3 +10,4 @@ data/
 /agent-*
 .agents/
 .codex/
+dist/

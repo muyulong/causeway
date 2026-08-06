@@ -67,7 +67,7 @@ func runCmd() {
 	flag.BoolVar(&showVersion, "version", false, "print version and exit")
 	flag.Parse()
 	if showVersion {
-		fmt.Println("ssh-relay agent", tunnel.Version)
+		fmt.Println("causeway agent", tunnel.Version)
 		return
 	}
 
