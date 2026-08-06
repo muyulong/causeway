@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Causeway 控制台</title>
+<link rel="stylesheet" href="/vendor/xterm.css">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div id="login" class="hidden">
+  <div class="login-card">
+    <div class="brand-lg"><span class="brand-glyph">▤</span> Causeway</div>
+    <div class="tabs">
+      <button id="tab-account" class="tab active" onclick="switchLoginTab('account')">账号登录</button>
+      <button id="tab-token" class="tab" onclick="switchLoginTab('token')">Token 登录</button>
+    </div>
+    <div id="login-account">
+      <input id="user-input" placeholder="用户名" autocomplete="username">
+      <input id="pass-input" type="password" placeholder="密码" autocomplete="current-password">
+      <button class="btn primary block" onclick="loginAccount()">登录</button>
+    </div>
+    <div id="login-token" class="hidden">
+      <input id="token-input" type="password" placeholder="平台 Token" autocomplete="off">
+      <button class="btn primary block" onclick="loginToken()">登录</button>
+    </div>
+    <p id="login-msg" class="error"></p>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <header class="topbar">
+    <div class="brand"><span class="brand-glyph">▤</span> Causeway</div>
+    <span class="spacer"></span>
+    <span id="conn-state" class="muted"></span>
+    <span id="whoami" class="chip"></span>
+    <button id="admin-btn" class="btn ghost hidden" onclick="showUsersPanel()">用户管理</button>
+    <button class="btn ghost" onclick="logout()">退出</button>
+  </header>
+
+  <main>
+    <section class="stats">
+      <div class="stat"><span id="stat-total">0</span><label>服务器</label></div>
+      <div class="stat on"><span id="stat-online">0</span><label>在线</label></div>
+      <div class="stat off"><span id="stat-offline">0</span><label>离线</label></div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2>添加服务器</h2></div>
+      <div class="row">
+        <input id="new-name" placeholder="服务器名称，如 web-01" autocomplete="off">
+        <button class="btn primary" onclick="addServer()">添加</button>
+      </div>
+      <p class="hint">添加后在服务器菜单里获取“安装命令”，到目标机上执行一次即可。</p>
+      <span id="add-msg" class="error"></span>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>服务器</h2>
+        <span class="muted">点 ⋯ 展开操作</span>
+      </div>
+      <div class="table-wrap">
+        <table id="servers">
+          <thead>
+            <tr>
+              <th>服务器</th><th>状态</th><th>端口</th><th>默认用户</th><th>版本</th><th>最后心跳</th><th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div id="empty" class="empty hidden">还没有服务器，先在上方添加一台</div>
+    </section>
+
+    <section id="install-panel" class="card hidden">
+      <div class="card-head">
+        <h2>安装命令</h2>
+        <span class="muted">Token 仅显示一次；重新获取会轮换 Token</span>
+        <span class="spacer"></span>
+        <button class="btn" onclick="copyInstall()">复制</button>
+        <button class="btn ghost" onclick="closeInstall()">关闭</button>
+      </div>
+      <textarea id="install-script" readonly spellcheck="false"></textarea>
+    </section>
+
+    <section id="logs-panel" class="card hidden">
+      <div class="card-head">
+        <h2>日志 <span id="logs-title" class="muted"></span></h2>
+        <span class="spacer"></span>
+        <button class="btn ghost" onclick="closeLogs()">关闭</button>
+      </div>
+      <pre id="logs"></pre>
+    </section>
+
+    <section id="users-panel" class="card hidden">
+      <div class="card-head">
+        <h2>用户管理</h2>
+        <span class="spacer"></span>
+        <button class="btn ghost" onclick="closeUsersPanel()">关闭</button>
+      </div>
+      <div class="row">
+        <input id="nu-name" placeholder="用户名" autocomplete="off">
+        <input id="nu-pass" type="password" placeholder="初始密码（≥8位）">
+        <select id="nu-role">
+          <option value="member">成员</option>
+          <option value="admin">管理员</option>
+        </select>
+        <button class="btn primary" onclick="addUser()">添加用户</button>
+      </div>
+      <span id="nu-msg" class="error"></span>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>用户名</th><th>角色</th><th>状态</th><th>密钥</th><th>操作</th></tr></thead>
+          <tbody id="users-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="terminal-view" class="hidden">
+  <div class="term-head">
+    <div class="brand"><span class="brand-glyph">▤</span> Web 终端 <span id="term-title" class="muted"></span></div>
+    <span class="spacer"></span>
+    <button class="btn ghost" onclick="closeTerminal()">返回</button>
+  </div>
+  <div id="terminal"></div>
+</div>
+
+<div id="umodal" class="modal hidden">
+  <div class="modal-box">
+    <h3 id="umodal-title"></h3>
+    <div id="umodal-body"></div>
+    <div class="modal-actions">
+      <button id="umodal-ok" class="btn primary" onclick="umodalOk()">保存</button>
+      <button class="btn ghost" onclick="umodalClose()">取消</button>
+    </div>
+  </div>
+</div>
+
+<div id="cmodal" class="modal hidden">
+  <div class="modal-box small">
+    <h3 id="cmodal-title"></h3>
+    <p id="cmodal-text" class="muted"></p>
+    <div class="modal-actions">
+      <button id="cmodal-ok" class="btn danger">确定</button>
+      <button id="cmodal-cancel" class="btn ghost">取消</button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script src="/vendor/xterm.js"></script>
+<script src="/vendor/addon-fit.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+bin/
+data/
+*.pem
+*.key
+*.db
+.DS_Store
+*.log
+.env
+/relay-*
+/agent-*
+.agents/
+.codex/
