@@ -126,6 +126,7 @@ internal/agent/     # SSH 服务器、SOCKS5、安装/保活
 internal/relay/     # 注册中心、网关、SQLite、API、Web 页面
 docs/DEPLOY.md      # 部署与引导指南
 PLAN.md             # 技术计划与实现状态
+docs/V2_PLAN.md     # v2 计划（会话录制、端口转发、多人权限等）
 ```
 
 ## 开发
